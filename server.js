@@ -11,7 +11,10 @@ if (process.env.NODE_ENV === "production") {
 }
 
 // Define API routes here
-
+app.get("/api/search/:key", function (req, res) {
+  console.log(req.params.key);
+  res.send({ response: "thanks" });
+});
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
