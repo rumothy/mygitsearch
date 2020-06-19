@@ -4,10 +4,6 @@ import "./App.css";
 import Search from "./Search";
 
 class App extends Component {
-  handleSearch = () => {
-    console.log("search clicked");
-  };
-
   render() {
     return (
       <div className="App">
