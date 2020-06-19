@@ -4,12 +4,26 @@ const keys = require("../private/token");
 module.exports = {
   search: function (req, res) {
     const key = req.params.key;
-    console.log("key:", key);
     let query = buildQuery(key, "", "first: 10");
     executeQuery(query)
       .then((r) => r.json())
       .then((data) => {
-        console.log("data returned:", data);
+        let dataData = data.data;
+        let search = dataData.search;
+        res.send(search);
+      });
+  },
+
+  search2: function (req, res) {
+    const searchParams = req.body;
+    let query = buildQuery(
+      searchParams.key,
+      searchParams.before,
+      searchParams.after
+    );
+    executeQuery(query)
+      .then((r) => r.json())
+      .then((data) => {
         let dataData = data.data;
         let search = dataData.search;
         res.send(search);

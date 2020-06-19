@@ -12,6 +12,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.get("/api/search/:key", searchController.search);
+app.post("/api/search2", searchController.search2);
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "./client/build/index.html"));

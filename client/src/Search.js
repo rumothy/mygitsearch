@@ -4,7 +4,6 @@ import {
   InputGroup,
   FormControl,
   ListGroup,
-  ListGroupItem,
   Image,
 } from "react-bootstrap";
 import API from "./utils/API";
@@ -15,12 +14,9 @@ const Search = () => {
   const [result, setResult] = useState(SearchResult.CreateEmptySearchResult());
 
   function handleSearch() {
-    console.log(`searching for ${key}`);
     API.search(key)
       .then((res) => {
-        console.log(res.data);
         let searchResult = new SearchResult(res.data);
-        console.log(searchResult);
         setResult(searchResult);
       })
       .catch((err) => console.log(err));
@@ -31,6 +27,33 @@ const Search = () => {
     setKey(value);
   }
 
+  function handlePrevious() {
+    const searchParams = {
+      key: key,
+      before: `before: "${result.startCursor}", last: 10`,
+      after: "",
+    };
+    API.search2(searchParams)
+      .then((res) => {
+        let searchResult = new SearchResult(res.data);
+        setResult(searchResult);
+      })
+      .catch((err) => console.log(err));
+  }
+
+  function handleNext() {
+    const searchParams = {
+      key: key,
+      before: "",
+      after: `first: 10, after: "${result.endCursor}"`,
+    };
+    API.search2(searchParams)
+      .then((res) => {
+        let searchResult = new SearchResult(res.data);
+        setResult(searchResult);
+      })
+      .catch((err) => console.log(err));
+  }
   return (
     <div>
       <InputGroup className="mb-3">
@@ -42,13 +65,22 @@ const Search = () => {
           aria-describedby="basic-addon2"
         />
         <InputGroup.Append>
-          <Button onClick={handleSearch} variant="outline-secondary">
+          <Button
+            onClick={handleSearch}
+            variant="outline-secondary"
+            disabled={!key}
+          >
             Search
           </Button>
         </InputGroup.Append>
       </InputGroup>
       <h3>{result.repositoryCount} repository results</h3>
-
+      <Button onClick={handlePrevious} disabled={!result.hasPreviousPage}>
+        {"<"}
+      </Button>
+      <Button onClick={handleNext} disabled={!result.hasNextPage}>
+        {">"}
+      </Button>
       <ListGroup>
         {result.repoResults.map((repoResult) => (
           <ListGroup.Item key={repoResult.cursor}>
@@ -57,17 +89,11 @@ const Search = () => {
             </div>
             <p>{repoResult.description}</p>
             <a href={repoResult.repoUrl}>{repoResult.repoUrl}</a>
+            <p>Stargazers: {repoResult.stargazerCount}</p>
+            <p>Followers: {repoResult.followerCount}</p>
           </ListGroup.Item>
         ))}
       </ListGroup>
-      {/* <ul>
-        {result.repoResults.map((repoResult) => (
-          <li key={repoResult.cursor}>{repoResult.description}</li>
-        ))}
-      </ul> */}
-
-      <Button>{"<"}</Button>
-      <Button>{">"}</Button>
     </div>
   );
 };
